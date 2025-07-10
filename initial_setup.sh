@@ -6,7 +6,7 @@ CUR_DIR="$(pwd)"
 
 # update pkg and install essentials
 pkg update -y && pkg upgrade -y
-pkg install -y ripgrep lua53 clang make unzip ninja curl
+pkg install -y ripgrep lua53 clang make unzip ninja curl rust
 
 # install neovim (Termux repo)
 pkg install -y neovim
@@ -24,9 +24,6 @@ fi
 
 # configure PATH for lua-ls
 echo 'export PATH="$HOME/lua-language-server/bin:$PATH"' >> ~/.profile
-
-# install Rust (manual, no rustup)
-pkg install -y rust
 
 # install rust-analyzer manually
 RA_BIN="$HOME/.local/bin/rust-analyzer"
