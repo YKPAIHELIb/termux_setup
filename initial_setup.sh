@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+# save current directory
+CUR_DIR="$(pwd)"
+
 # update pkg and install essentials
 pkg update -y && pkg upgrade -y
 pkg install -y ripgrep lua53 clang make unzip ninja curl
@@ -35,6 +38,7 @@ chmod +x "$RA_BIN"
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile
 
 # install JetBrainsMono Nerd Font
+cd "$CUR_DIR"
 mkdir -p ~/.termux
 cp JetBrainsMonoNerdFont-Medium.ttf ~/.termux/font.ttf
 
