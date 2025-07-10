@@ -28,7 +28,7 @@ echo 'export PATH="$HOME/lua-language-server/bin:$PATH"' >> ~/.profile
 # install rust-analyzer manually
 RA_BIN="$HOME/.local/bin/rust-analyzer"
 mkdir -p "$(dirname "$RA_BIN")"
-curl -L https://github.com/rust-lang/rust-analyzer/releases/latest/download/rust-analyzer-aarch64-linux.gz | gzip -d > "$RA_BIN"
+curl -Lo "$RA_BIN" https://github.com/rust-lang/rust-analyzer/releases/latest/download/rust-analyzer-aarch64-linux
 chmod +x "$RA_BIN"
 
 # configure PATH for rust-analyzer
