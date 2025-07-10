@@ -3,7 +3,7 @@ set -e
 
 # update pkg and install essentials
 pkg update -y && pkg upgrade -y
-pkg install -y ripgrep lua53 clang make unzip ninja
+pkg install -y ripgrep lua53 clang make unzip ninja curl
 
 # install neovim (Termux repo)
 pkg install -y neovim
@@ -22,8 +22,20 @@ fi
 # configure PATH for lua-ls
 echo 'export PATH="$HOME/lua-language-server/bin:$PATH"' >> ~/.profile
 
+# install Rust (manual, no rustup)
+pkg install -y rust
+
+# install rust-analyzer manually
+RA_BIN="$HOME/.local/bin/rust-analyzer"
+mkdir -p "$(dirname "$RA_BIN")"
+curl -L https://github.com/rust-lang/rust-analyzer/releases/latest/download/rust-analyzer-aarch64-linux.gz | gzip -d > "$RA_BIN"
+chmod +x "$RA_BIN"
+
+# configure PATH for rust-analyzer
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile
+
 # install JetBrainsMono Nerd Font
 mkdir -p ~/.termux
 cp JetBrainsMonoNerdFont-Medium.ttf ~/.termux/font.ttf
 
-echo "✔️ Termux setup completed: git, rg, neovim, treesitter deps, lua_ls"
+echo "Termux setup completed: git, rg, neovim, treesitter deps, lua_ls, rust, rust-analyzer"
