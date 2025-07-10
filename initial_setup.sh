@@ -22,4 +22,8 @@ fi
 # configure PATH for lua-ls
 echo 'export PATH="$HOME/lua-language-server/bin:$PATH"' >> ~/.profile
 
+# install JetBrainsMono Nerd Font
+mkdir -p ~/.termux
+cp JetBrainsMonoNerdFont-Medium.ttf ~/.termux/font.ttf
+
 echo "✔️ Termux setup completed: git, rg, neovim, treesitter deps, lua_ls"
