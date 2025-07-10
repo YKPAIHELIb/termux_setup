@@ -21,6 +21,5 @@ fi
 
 # configure PATH for lua-ls
 echo 'export PATH="$HOME/lua-language-server/bin:$PATH"' >> ~/.profile
-source ~/.profile
 
 echo "✔️ Termux setup completed: git, rg, neovim, treesitter deps, lua_ls"
