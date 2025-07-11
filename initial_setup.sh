@@ -6,7 +6,7 @@ CUR_DIR="$(pwd)"
 
 # update pkg and install essentials
 pkg update -y && pkg upgrade -y
-pkg install -y ripgrep lua53 clang make unzip ninja curl rust
+pkg install -y ripgrep lua53 clang make unzip ninja termux-api curl rust
 
 # install neovim (Termux repo)
 pkg install -y neovim
