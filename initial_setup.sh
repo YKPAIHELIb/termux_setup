@@ -6,7 +6,7 @@ CUR_DIR="$(pwd)"
 
 # update pkg and install essentials
 pkg update -y && pkg upgrade -y
-pkg install -y ripgrep lua53 clang make unzip ninja termux-api curl rust wget file
+pkg install -y ripgrep lua53 clang make unzip ninja termux-api curl rust rust-analyzer wget file
 
 # install neovim (Termux repo)
 pkg install -y neovim
@@ -24,15 +24,6 @@ fi
 
 # configure PATH for lua-ls
 echo 'export PATH="$HOME/lua-language-server/bin:$PATH"' >> ~/.profile
-
-# install rust-analyzer manually
-RA_BIN="$HOME/.local/bin/rust-analyzer"
-mkdir -p "$(dirname "$RA_BIN")"
-curl -Lo "$RA_BIN" https://github.com/rust-lang/rust-analyzer/releases/latest/download/rust-analyzer-aarch64-linux
-chmod +x "$RA_BIN"
-
-# configure PATH for rust-analyzer
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile
 
 # install JetBrainsMono Nerd Font
 cd "$CUR_DIR"
