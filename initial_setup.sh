@@ -30,4 +30,4 @@ cd "$CUR_DIR"
 mkdir -p ~/.termux
 cp JetBrainsMonoNerdFont-Medium.ttf ~/.termux/font.ttf
 
-echo "Termux setup completed: git, rg, neovim, treesitter deps, lua_ls, rust, rust-analyzer"
+echo "Termux setup completed!"
