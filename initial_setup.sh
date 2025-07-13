@@ -30,4 +30,18 @@ cd "$CUR_DIR"
 mkdir -p ~/.termux
 cp JetBrainsMonoNerdFont-Medium.ttf ~/.termux/font.ttf
 
+# configure git config
+git clone https://github.com/YKPAIHELIb/git-alias
+{
+    echo "[user]"
+    echo "	email = 11073387+YKPAIHELIb@users.noreply.github.com"
+    echo "	name = YKPAIHELIb"
+    echo "[credential]"
+    echo "	helper = store"
+    echo "[core]"
+    echo "	editor = nvim"
+    cat ./git-alias/aliases.txt
+} > ~/.gitconfig
+echo "alias gconf='(cd ~ && nvim .gitconfig)'" >> ~/.bashrc
+
 echo "Termux setup completed!"
