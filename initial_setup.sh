@@ -44,4 +44,7 @@ git clone https://github.com/YKPAIHELIb/git-alias
 } > ~/.gitconfig
 echo "alias gconf='(cd ~ && nvim .gitconfig)'" >> ~/.bashrc
 
+# Clone my neovim config
+git clone --branch termux --single-branch https://github.com/YKPAIHELIb/config_nvim ~/.config/nvim/
+
 echo "Termux setup completed!"
