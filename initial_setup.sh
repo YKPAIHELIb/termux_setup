@@ -47,4 +47,15 @@ echo "alias gconf='(cd ~ && nvim .gitconfig)'" >> ~/.bashrc
 # Clone my neovim config
 git clone --branch termux --single-branch https://github.com/YKPAIHELIb/config_nvim ~/.config/nvim/
 
+# posh-git-sh setup
+curl -fsSL https://raw.githubusercontent.com/lyze/posh-git-sh/master/git-prompt.sh -o ~/.git-prompt.sh
+echo 'source ~/.git-prompt.sh' >> ~/.bashrc
+echo 'PROMPT_COMMAND='\''__posh_git_ps1 "\w " "\\\$ ";'\''$PROMPT_COMMAND' >> ~/.bashrc
+
+# bash completion for git
+pkg install -y bash-completion
+GIT_COMPLETION=~/.git-completion.bash
+curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o "$GIT_COMPLETION"
+echo "source $GIT_COMPLETION" >> ~/.bashrc
+
 echo "Termux setup completed!"
