@@ -32,6 +32,7 @@ cp JetBrainsMonoNerdFont-Medium.ttf ~/.termux/font.ttf
 
 # Clone my neovim config
 git clone --branch termux --single-branch https://github.com/YKPAIHELIb/config_nvim ~/.config/nvim/
+echo "alias nvimconf='(cd ~/.config/nvim && nvim)'" >> ~/.bashrc
 
 # configure git config
 git clone https://github.com/YKPAIHELIb/git-alias
