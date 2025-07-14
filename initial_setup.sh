@@ -30,6 +30,9 @@ cd "$CUR_DIR"
 mkdir -p ~/.termux
 cp JetBrainsMonoNerdFont-Medium.ttf ~/.termux/font.ttf
 
+# Clone my neovim config
+git clone --branch termux --single-branch https://github.com/YKPAIHELIb/config_nvim ~/.config/nvim/
+
 # configure git config
 git clone https://github.com/YKPAIHELIb/git-alias
 {
@@ -43,9 +46,6 @@ git clone https://github.com/YKPAIHELIb/git-alias
     cat ./git-alias/aliases.txt
 } > ~/.gitconfig
 echo "alias gconf='(cd ~ && nvim .gitconfig)'" >> ~/.bashrc
-
-# Clone my neovim config
-git clone --branch termux --single-branch https://github.com/YKPAIHELIb/config_nvim ~/.config/nvim/
 
 # posh-git-sh setup
 curl -fsSL https://raw.githubusercontent.com/lyze/posh-git-sh/master/git-prompt.sh -o ~/.git-prompt.sh
