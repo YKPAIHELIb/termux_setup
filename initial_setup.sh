@@ -6,7 +6,7 @@ CUR_DIR="$(pwd)"
 
 # update pkg and install essentials
 pkg update -y && pkg upgrade -y
-pkg install -y ripgrep lua53 clang make unzip ninja termux-api curl rust rust-analyzer wget file
+pkg install -y ripgrep lua53 clang make unzip ninja termux-api curl rust rust-analyzer wget file fzf lazygit
 
 # install neovim (Termux repo)
 pkg install -y neovim
@@ -58,5 +58,9 @@ pkg install -y bash-completion
 GIT_COMPLETION=~/.git-completion.bash
 curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o "$GIT_COMPLETION"
 echo "source $GIT_COMPLETION" >> ~/.bashrc
+
+# fzf setup
+echo 'source /data/data/com.termux/files/usr/share/fzf/completion.bash' >> ~/.bashrc
+echo 'source /data/data/com.termux/files/usr/share/fzf/key-bindings.bash' >> ~/.bashrc
 
 echo "Termux setup completed!"
