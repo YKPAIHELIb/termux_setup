@@ -75,10 +75,13 @@ __fuzzy_content_widget() { __nvim_at_match "$(__fuzzy_content)"; }
 bind -m emacs-standard -x '"\C-x\C-f": __fuzzy_content_widget'
 bind -m emacs-standard '"\C-f": "\C-x\C-f\C-m"'
 
-# === codediff.nvim wrappers ===
+# === diff wrappers (git + delta) ===
+# codediff.nvim isn't loaded on Termux (see config_nvim's
+# lua/config/termux.lua); these page through delta via core.pager.
 
 # cdiff [--ext EXT] [LEFT RIGHT] — ad-hoc two-target compare (files or
-# directories); with no paths, a blank canvas with EXT highlighting (txt).
+# directories); with no paths, a blank canvas: Neovim's own diff mode on two
+# empty EXT files (txt), updating live as you paste.
 cdiff() {
   local ext=txt
   if [ "$1" = --ext ]; then
@@ -86,24 +89,30 @@ cdiff() {
     shift 2
   fi
   if [ $# -eq 0 ]; then
-    nvim -c "CodeDiffScratch $ext"
+    local dir
+    dir=$(mktemp -d)
+    : > "$dir/left.$ext"
+    : > "$dir/right.$ext"
+    nvim -d "$dir/left.$ext" "$dir/right.$ext"
+    rm -rf "$dir"
     return
   fi
   if [ $# -ne 2 ]; then
     echo 'cdiff: provide two paths, or none (none = blank canvas).' >&2
     return 1
   fi
-  local sub=file
-  [ -d "$1" ] && [ -d "$2" ] && sub=dir
-  nvim -c "CodeDiff $sub ${1// /\\ } ${2// /\\ }"
+  # --no-index exits 1 when the paths differ; that is not an error here.
+  git diff --no-index -- "$1" "$2"
+  [ $? -le 1 ]
 }
 
-# gdiff [REFS...] — review git changes via codediff's explorer
+# gdiff [REFS...] — review git changes: with no refs, everything not yet
+# committed (staged and unstaged) against HEAD; otherwise `git diff REFS`.
 gdiff() {
   if [ $# -eq 0 ]; then
-    nvim -c CodeDiff
+    git diff HEAD
   else
-    nvim -c "CodeDiff $*"
+    git diff "$@"
   fi
 }
 
