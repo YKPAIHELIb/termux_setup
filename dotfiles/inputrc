@@ -1,0 +1,6 @@
+# Copied to ~/.inputrc by initial_setup.sh.
+# Up/Down search history for lines starting with what is already typed.
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+"\eOA": history-search-backward
+"\eOB": history-search-forward

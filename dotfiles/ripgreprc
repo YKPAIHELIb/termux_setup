@@ -1,0 +1,4 @@
+--glob=!node_modules
+--glob=!.git
+--glob=!*.min.js
+--smart-case

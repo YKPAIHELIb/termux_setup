@@ -1,66 +1,39 @@
 #!/usr/bin/env bash
 set -e
 
-# save current directory
-CUR_DIR="$(pwd)"
+# directory of this repo, the source of the dotfiles and the font
+REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # update pkg and install essentials
 pkg update -y && pkg upgrade -y
-pkg install -y ripgrep lua53 clang make unzip ninja termux-api curl rust rust-analyzer wget file fzf lazygit
-
-# install neovim (Termux repo)
-pkg install -y neovim
-
-# setup Lua LSP (lua-language-server) manually
-LUA_LS_DIR="$HOME/lua-language-server"
-if [ ! -d "$LUA_LS_DIR" ]; then
-  git clone https://github.com/sumneko/lua-language-server "$LUA_LS_DIR"
-  cd "$LUA_LS_DIR"
-  git submodule update --init --recursive
-  cd 3rd/luamake && ./compile/install.sh
-  cd "$LUA_LS_DIR"
-  ./3rd/luamake/luamake rebuild
-fi
-
-# configure PATH for lua-ls
-echo 'export PATH="$HOME/lua-language-server/bin:$PATH"' >> ~/.profile
+pkg install -y git neovim ripgrep fzf bat git-delta lazygit clang make unzip \
+  termux-api curl wget file bash-completion \
+  rust rust-analyzer lua-language-server
 
 # install JetBrainsMono Nerd Font
-cd "$CUR_DIR"
 mkdir -p ~/.termux
-cp JetBrainsMonoNerdFont-Medium.ttf ~/.termux/font.ttf
+cp "$REPO_DIR/JetBrainsMonoNerdFont-Medium.ttf" ~/.termux/font.ttf
+termux-reload-settings
 
 # Clone my neovim config
-git clone --branch termux --single-branch https://github.com/YKPAIHELIb/config_nvim ~/.config/nvim/
-echo "alias nvimconf='(cd ~/.config/nvim && nvim)'" >> ~/.bashrc
+if [ ! -d ~/.config/nvim ]; then
+  git clone https://github.com/YKPAIHELIb/config_nvim ~/.config/nvim
+fi
 
-# configure git config
-git clone https://github.com/YKPAIHELIb/git-alias
-{
-    echo "[user]"
-    echo "	email = 11073387+YKPAIHELIb@users.noreply.github.com"
-    echo "	name = YKPAIHELIb"
-    echo "[credential]"
-    echo "	helper = store"
-    echo "[core]"
-    echo "	editor = nvim"
-    cat ./git-alias/aliases.txt
-} > ~/.gitconfig
-echo "alias gconf='(cd ~ && nvim .gitconfig)'" >> ~/.bashrc
+# git config: my settings followed by my aliases
+GIT_ALIAS_DIR="$(mktemp -d)"
+git clone --depth 1 https://github.com/YKPAIHELIb/git-alias "$GIT_ALIAS_DIR"
+cat "$REPO_DIR/dotfiles/gitconfig" "$GIT_ALIAS_DIR/aliases.txt" > ~/.gitconfig
+rm -rf "$GIT_ALIAS_DIR"
 
-# posh-git-sh setup
+# scripts sourced by bashrc: posh-git-sh prompt and git completion
 curl -fsSL https://raw.githubusercontent.com/lyze/posh-git-sh/master/git-prompt.sh -o ~/.git-prompt.sh
-echo 'source ~/.git-prompt.sh' >> ~/.bashrc
-echo 'PROMPT_COMMAND='\''__posh_git_ps1 "\w " "\\\$ ";'\''$PROMPT_COMMAND' >> ~/.bashrc
+curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o ~/.git-completion.bash
 
-# bash completion for git
-pkg install -y bash-completion
-GIT_COMPLETION=~/.git-completion.bash
-curl -fsSL https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash -o "$GIT_COMPLETION"
-echo "source $GIT_COMPLETION" >> ~/.bashrc
+# shell dotfiles
+cp "$REPO_DIR/dotfiles/bashrc" ~/.bashrc
+cp "$REPO_DIR/dotfiles/inputrc" ~/.inputrc
+mkdir -p ~/.config/ripgrep
+cp "$REPO_DIR/dotfiles/ripgreprc" ~/.config/ripgrep/config
 
-# fzf setup
-echo 'source /data/data/com.termux/files/usr/share/fzf/completion.bash' >> ~/.bashrc
-echo 'source /data/data/com.termux/files/usr/share/fzf/key-bindings.bash' >> ~/.bashrc
-
-echo "Termux setup completed!"
+echo "Termux setup completed! Restart Termux to load the new shell settings."

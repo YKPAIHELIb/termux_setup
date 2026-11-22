@@ -1,0 +1,111 @@
+# Copied to ~/.bashrc by initial_setup.sh; edit it in the termux_setup repo.
+
+# --- prompt: posh-git-sh ---
+source ~/.git-prompt.sh
+PROMPT_COMMAND='__posh_git_ps1 "\w " "\\\$ ";'$PROMPT_COMMAND
+
+# --- completion ---
+source ~/.git-completion.bash
+
+# --- ripgrep defaults ---
+export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/config"
+
+# --- fzf: CTRL-T file picker, ALT-C cd, **<Tab> completion ---
+eval "$(fzf --bash)"
+
+# A macro bound to "<widget key>\C-m" runs a bind -x widget, which fills
+# READLINE_LINE, and then executes that line like a typed command.
+# Ctrl-X Ctrl-H/R/F are the widget keys behind Ctrl-Y/R/F below.
+
+# Ctrl-Y: pick a command from history with fzf and run it
+bind -m emacs-standard -x '"\C-x\C-h": __fzf_history__'
+bind -m emacs-standard '"\C-y": "\C-x\C-h\C-m"'
+
+# Puts `nvim +<line> <file>` on the command line for an rg match line
+# (file:line:...), or empties the line when nothing was picked.
+__nvim_at_match() {
+  local sel=$1 file line
+  if [ -z "$sel" ]; then
+    READLINE_LINE=
+    return
+  fi
+  file=${sel%%:*}
+  line=${sel#*:}
+  line=${line%%:*}
+  printf -v READLINE_LINE 'nvim +%s %q' "$line" "$file"
+  READLINE_POINT=${#READLINE_LINE}
+}
+
+# Ctrl-R: live grep with ripgrep regex
+__live_grep() {
+  local rg='rg --column --line-number --no-heading --color=always --smart-case'
+  fzf --ansi \
+      --disabled \
+      --query='' \
+      --prompt='live-grep> ' \
+      --header='type to search (regex, ripgrep)' \
+      --bind="change:reload:$rg {q} . || true" \
+      --delimiter=':' \
+      --preview='bat --color=always --style=numbers --highlight-line {2} {1}' \
+      --preview-window='up,60%,border-bottom,+{2}+3/3'
+}
+__live_grep_widget() { __nvim_at_match "$(__live_grep)"; }
+bind -m emacs-standard -x '"\C-x\C-r": __live_grep_widget'
+bind -m emacs-standard '"\C-r": "\C-x\C-r\C-m"'
+
+# Ctrl-F: fuzzy over all file contents
+__fuzzy_content() {
+  local count answer tty
+  count=$(rg --files . | wc -l)
+  if [ "$count" -gt 5000 ]; then
+    tty=$(stty -g)
+    stty sane
+    read -rp "About to fuzzy-load $count files. Continue? (y/N) " answer
+    stty "$tty"
+    [[ $answer == [yY]* ]] || return
+  fi
+  rg --line-number --no-heading --color=always --with-filename '' . |
+    fzf --ansi \
+        --prompt='fuzzy-content> ' \
+        --delimiter=':' \
+        --preview='bat --color=always --style=numbers --highlight-line {2} {1}' \
+        --preview-window='up,60%,border-bottom,+{2}+3/3'
+}
+__fuzzy_content_widget() { __nvim_at_match "$(__fuzzy_content)"; }
+bind -m emacs-standard -x '"\C-x\C-f": __fuzzy_content_widget'
+bind -m emacs-standard '"\C-f": "\C-x\C-f\C-m"'
+
+# === codediff.nvim wrappers ===
+
+# cdiff [--ext EXT] [LEFT RIGHT] — ad-hoc two-target compare (files or
+# directories); with no paths, a blank canvas with EXT highlighting (txt).
+cdiff() {
+  local ext=txt
+  if [ "$1" = --ext ]; then
+    ext=$2
+    shift 2
+  fi
+  if [ $# -eq 0 ]; then
+    nvim -c "CodeDiffScratch $ext"
+    return
+  fi
+  if [ $# -ne 2 ]; then
+    echo 'cdiff: provide two paths, or none (none = blank canvas).' >&2
+    return 1
+  fi
+  local sub=file
+  [ -d "$1" ] && [ -d "$2" ] && sub=dir
+  nvim -c "CodeDiff $sub ${1// /\\ } ${2// /\\ }"
+}
+
+# gdiff [REFS...] — review git changes via codediff's explorer
+gdiff() {
+  if [ $# -eq 0 ]; then
+    nvim -c CodeDiff
+  else
+    nvim -c "CodeDiff $*"
+  fi
+}
+
+gconf() { (cd ~ && nvim .gitconfig); }
+nvimconf() { (cd ~/.config/nvim && nvim); }
